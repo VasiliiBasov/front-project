@@ -1,0 +1,111 @@
+<html>
+<head>
+    <title>RPG</title>
+    <script src=https://code.jquery.com/jquery-3.6.0.min.js></script>
+    <link href="/css/my.css" rel="stylesheet">
+</head>
+<body onload="addTable(), check(3)">
+<h1>RPG admin panel</h1>
+<h2>Accounts list:</h2>
+
+    <label for="pageSelect">Count per page:</label>
+    Count per page: <select id="pageSelect" onchange="check(this.value)">
+    <option value="3" >3</option>
+    <option value="5">5</option>
+    <option value="10">10</option>
+</select>
+<table id="table1">
+    <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Title</th>
+        <th>Race</th>
+        <th>Profession</th>
+        <th>Level</th>
+        <th>Birthday</th>
+        <th>Banned</th>
+    </tr>
+</table>
+<div id="pagesButton">
+    Pages:
+
+</div>
+<script>
+    function addTable() {
+        let url = "/rest/players";
+        let table = $("#table1");
+        $.get(url, function (data) {
+            $.each(data, function (i, item) {
+                $('<tr>').html('<td>'
+                    + item.id + '</td><td>'
+                    + item.name + '</td><td>'
+                    + item.title + '</td><td>'
+                    + item.race + '</td><td>'
+                    + item.profession + '</td><td>'
+                    + item.level + '</td><td>'
+                    + new Date(item.birthday).toLocaleDateString() + '</td><td>'
+                    + item.banned + hhhhhghghhg
+                ).appendTo(table);
+            });
+        });
+    }
+    function addTables(url) {
+        let table = $("#table1");
+        $.get(url, function (data) {
+            $.each(data, function (i, item) {
+                $('<tr>').html('<td>'
+                    + item.id + '</td><td>'
+                    + item.name + '</td><td>'
+                    + item.title + '</td><td>'
+                    + item.race + '</td><td>'
+                    + item.profession + '</td><td>'
+                    + item.level + '</td><td>'
+                    + new Date(item.birthday).toLocaleDateString() + '</td><td>'
+                    + item.banned + '</td>'
+                ).appendTo(table);
+            });
+        });
+    }
+
+    function getCountAccounts() {
+        let url = "/rest/players/count";
+        let count = 0;
+        $.ajax({
+            url: url,
+            async: false,
+            success: function (data) {
+                count = parseInt(data);
+            }
+        })
+        return count;
+    }
+</script>
+<script id="pages">
+    function check(countPages) {
+        $('#pagesButton').text('Pages: ');
+        for (let i = 0; i < getCountAccounts()/countPages; i++) {
+            var newButton = $('<button name="pageButton" value="0" onclick="clickButton(this.value)"></button>');
+            $('#pagesButton').append(newButton);
+        }
+        let array = document.getElementsByName("pageButton");
+        let count = 1;
+        array.forEach(e => {
+            e.innerText = count;
+            e.id = "button " + count;
+            e.value = count;
+            count++;
+        });
+    }
+    function clickButton(buttonNumber) {
+        let pageSize = $('pageSelect').value;
+        if (pageSize == null) {
+            pageSize = 3;
+        }
+        console.log(pageSize);
+        let url = "/rest/players?pageNumber=" + buttonNumber + "pageSize=" + pageSize
+        url = url.concat("pageSize=").concat(pageSize).concat("&pageNumber=").concat(buttonNumber);
+        addTables(url);
+    }
+</script>
+</body>
+</html>
